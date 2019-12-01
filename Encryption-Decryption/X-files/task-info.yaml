@@ -1,0 +1,156 @@
+type: edu
+custom_name: stage5
+files:
+- name: test/EncryptDecryptTest.java
+  visible: false
+  text: |
+    import encryptdecrypt.Main;
+    import org.hyperskill.hstest.v6.common.FileUtils;
+    import org.hyperskill.hstest.v6.stage.BaseStageTest;
+    import org.hyperskill.hstest.v6.testcase.CheckResult;
+    import org.hyperskill.hstest.v6.testcase.TestCase;
+
+    import java.util.List;
+
+    public class EncryptDecryptTest extends BaseStageTest<String> {
+        public EncryptDecryptTest() {
+            super(Main.class);
+        }
+
+        @Override
+        public List<TestCase<String>> generate() {
+            return List.of(
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "enc",
+                        "-key", "5",
+                        "-in", "in.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("\\jqhtrj%yt%m~ujwxpnqq&")
+                    .addFile("in.txt", "Welcome to hyperskill!"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "0",
+                        "-mode", "enc",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("Hello")
+                    .addFile("input.txt", "Hello"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "1",
+                        "-in", "i.txt",
+                        "-out", "output.txt",
+                        "-mode", "enc"
+                    )
+                    .setAttach("123456789")
+                    .addFile("i.txt", "012345678"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-in", "input.txt",
+                        "-out", "output.txt",
+                        "-key", "5"
+                    )
+                    .setAttach("Welcome to hyperskill!")
+                    .addFile("input.txt", "\\jqhtrj%yt%m~ujwxpnqq&"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "0",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("Hi")
+                    .addFile("input.txt", "Hi"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "1",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("111122223333")
+                    .addFile("input.txt", "222233334444")
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, String clue) {
+            String output = FileUtils.readFile("output.txt");
+            return new CheckResult(output.trim().equals(clue.trim()));
+        }
+    }
+  learner_created: false
+- name: src/encryptdecrypt/Main.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    import java.util.Scanner;
+
+    public class Main {
+        public static void main(String[] args) {
+            assert args.length % 2 == 0;
+            String mode = "enc";
+            int key = 0;
+            String data = "";
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                String value = args[++i];
+                switch (arg) {
+                    case "-mode":
+                        mode = value;
+                        break;
+                    case "-key":
+                        key = Integer.parseInt(value);
+                        break;
+                    case "-data":
+                        data = value;
+                        break;
+                    default:
+                        System.out.println("Unknown a argument: " + arg);
+                        break;
+                }
+            }
+            String result;
+            if ("dec".equals(mode)) {
+                result = decrypt(data, key);
+            } else {
+                result = encrypt(data, key);
+            }
+            System.out.println(result);
+        }
+
+        @SuppressWarnings("StringConcatenationInLoop")
+        private static String encrypt(String message, int key) {
+            String cyphertext = "";
+            for (char ch : message.toCharArray()) {
+                cyphertext += (char) (ch + key);
+            }
+            return cyphertext;
+        }
+
+        @SuppressWarnings("StringConcatenationInLoop")
+        private static String decrypt(String cyphertext, int key) {
+            String message = "";
+            for (char ch : cyphertext.toCharArray()) {
+                message += (char) (ch - key);
+            }
+            return message;
+        }
+    }
+  learner_created: false
+- name: output.txt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/46/stages/249/implement
+status: Solved
+record: 3
